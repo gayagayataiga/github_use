@@ -1,0 +1,106 @@
+\documentclass{ltjsarticle}
+% ltjsarticle: lualatex 用の 日本語 documentclass
+% 他のタイプセットエンジンを使ってビルドする場合は、 \documentclass[dvipdfmx]{jsarticle} などとする。
+\usepackage{geometry}
+\geometry{a4paper, margin=2.5cm}
+\usepackage{verbatim} % for code blocks
+\usepackage{tabularx} % for better tables
+\usepackage{hyperref} % for clickable links
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,
+    urlcolor=cyan,
+}
+
+\begin{document}
+
+\title{GitとGitHub初心者向け図解ガイド：\\最初のコマンドから共同作業まで}
+\author{Taro Meidai}
+\maketitle
+\tableofcontents
+\newpage
+
+\section*{はじめに：あなたの旅がここから始まる}
+\addcontentsline{toc}{section}{はじめに}
+プログラミングやウェブ制作の世界へようこそ。これから学ぶ多くのツールの中でも、Git（ギット）とGitHub（ギットハブ）は、現代の開発者にとって欠かせない存在です。しかし、多くの専門用語や黒い画面でのコマンド操作に、最初は戸惑いを感じるかもしれません。ご安心ください。この記事は、そんなあなたのためのガイドです。この旅では、複雑に見える概念を身近な比喩で解きほぐし、一つひとつのコマンド操作を丁寧に図解しながら、あなたのペースで進めていきます。
+
+まずは、この先で何度も登場する重要な言葉たちを、簡単な「翻訳機」を通して見てみましょう。これらの比喩が、あなたの理解を助ける羅針盤となるはずです。
+
+\subsection*{Git専門用語 翻訳機}
+\begin{tabular}{|l|l|p{6cm}|}
+\hline
+\textbf{専門用語} & \textbf{簡単な比喩} & \textbf{簡単な説明} \\
+\hline
+バージョン管理 (Version Control) & プロジェクトのタイムマシン & ファイルの変更履歴を記録し、いつでも過去の状態に戻せる仕組み。 \\
+リポジトリ (Repository) & プロジェクト専用の保管庫 & プロジェクトのファイルと、その全履歴が保存されている場所。 \\
+コミット (Commit) & セーブポイント & ファイルの特定の状態を「写真に撮って」履歴に保存する操作。 \\
+ブランチ (Branch) & パラレルワールド & プロジェクトの歴史を分岐させ、安全に新しい作業を進めるための仕組み。 \\
+マージ (Merge) & パラレルワールドの統合 & 分岐したブランチでの作業を、メインの歴史に合流させること。 \\
+リモート (Remote) & インターネット上の保管庫 & GitHubなど、ネットワーク上にあるリポジトリのこと。 \\
+プッシュ (Push) & ローカルからリモートへアップロード & 自分のPCで行った変更を、インターネット上のリポジトリに反映させること。 \\
+プル (Pull) & リモートからローカルへダウンロード & インターネット上のリポジトリの最新の変更を、自分のPCに持ってくること。 \\
+\hline
+\end{tabular}
+
+\section{あなたが知らなかったタイムマシン（なぜバージョン管理が必要なのか？）}
+レポートや企画書を作成している時、こんな経験はありませんか？ report_final.doc、report_final_v2.doc、report_final_REALLY_final.doc...。ファイル名がどんどん増えていき、どれが本当に最新版なのか分からなくなる。これは、多くの人が経験する「バージョン管理」の悩みです。
+
+\subsection{システムがないと直面する問題}
+システムを使わずに手作業でファイルのバージョンを管理しようとすると、いくつかの問題が必ず発生します。
+\begin{itemize}
+    \item \textbf{何かを壊すことへの恐怖:} 「この一行を変えたら、全部動かなくなるかも…」という不安から、変更を加えるたびにファイルのコピーを延々と作り続けることになります。これは非効率的で、ディスク容量も圧迫します。
+    \item \textbf{過去の作業の喪失:} 誤ってファイルを上書きしてしまい、以前の良かったバージョンを永遠に失ってしまうことがあります。「元に戻す」機能では救えない、致命的なミスにつながる可能性があります。
+    \item \textbf{共同作業のカオス:} 複数人で作業する場合、メールでファイルを送り合うのは悪夢の始まりです。誰かが加えた変更を自分のファイルに手作業で取り込み、気づかぬうちに他の人の修正を上書きしてしまうことも珍しくありません。「この変更は誰が、いつ、なぜ行ったのか？」という問いに答える術がなくなります。
+\end{itemize}
+
+\subsection{解決策：セーフティネットとしてのバージョン管理}
+Gitのようなバージョン管理システム（VCS）は、これらの問題を解決するための強力なセーフティネットです。
+\begin{itemize}
+    \item \textbf{完全な履歴の記録:} VCSは、ファイルに加えられた全ての変更を記録します。誰が、いつ、どのような目的で変更したのか、そのすべてが記録として残ります。
+    \item \textbf{自在なタイムトラベル:} プロジェクトの歴史の中の、どの時点にでも簡単かつ正確に戻ることができます。
+    \item \textbf{構造化された共同作業:} VCSは、複数人が同じプロジェクトで効率的に作業するための明確なルールと仕組みを提供します。
+\end{itemize}
+バージョン管理の最も重要な価値は、技術的な機能そのものよりも、それがもたらす「心理的安全性」にあります。それは「どれだけ大胆な変更を加えても、いつでも元に戻せる」という安心感です。
+
+\section{GitとGitHubの関係（言語と国のようなもの）}
+GitとGitHubはよく混同されますが、この2つは全く別のものです。
+\begin{itemize}
+    \item \textbf{Git:} プロジェクトの歴史を記録・管理するための「ソフトウェア」（コマンドラインツール）。
+    \item \textbf{GitHub:} Gitで管理されているプロジェクトを、インターネット上で保管・共有するための「ウェブサービス」。
+\end{itemize}
+以下の図は、ローカル環境（あなたのPC）のGitと、クラウド上のGitHubがどのように連携するかを示しています。
+\begin{verbatim}
+graph TD
+    subgraph あなたのPC (ローカル)
+        A[Git]
+    end
+    subgraph インターネット (クラウド)
+        B[GitHub]
+    end
+    A -- push（アップロード） --> B
+    B -- pull/clone（ダウンロード） --> A
+\end{verbatim}
+なぜ両方が必要なのか？Gitだけでも、個人のプロジェクトを管理することは可能です。しかし、GitHubを組み合わせることで、Gitの真価が発揮されます。
+
+\section{開発者のツールキットを揃えよう}
+\subsection{パート1：Gitのインストール（道具を手に入れる）}
+\subsubsection{Windowsの場合}
+公式サイト \url{https://git-scm.com} からインストーラーをダウンロードし、基本的にすべてデフォルト設定でインストールします。完了後、Git Bashやコマンドプロンプトで以下を実行します。
+\begin{verbatim}
+git --version
+\end{verbatim}
+
+\subsubsection{macOSの場合}
+まずターミナルで `git --version` を試し、なければHomebrew (\url{https://brew.sh}) をインストール後、以下を実行します。
+\begin{verbatim}
+brew install git
+\end{verbatim}
+
+\subsection{パート2：GitHubアカウントの作成}
+公式サイト \url{https://github.com} で「Sign up」し、指示に従いアカウントを作成します。
+
+\subsection{パート3：Gitへの自己紹介（初回設定）}
+ターミナルで以下のコマンドを実行します。名前と、GitHubに登録したメールアドレスを設定してください。
+\begin{verbatim}
+git config --global user.name
